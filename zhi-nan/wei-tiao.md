@@ -362,3 +362,179 @@ curl https://api.openai.com/v1/completions \
 ```
 
 为了获得高性能，请确保完成是基于提供的描述。如果经常查阅外部内容，则以自动化方式添加此类内容将改善性能。如果描述基于图像，则使用算法提取图像的文本描述可能会有所帮助。由于完成只有一句话长，因此我们可以在推理过程中使用“。”作为停止序列。
+
+## 高级用法
+
+### 自定义模型名称
+
+您可以使用后缀参数将最多40个字符的后缀添加到您的微调模型名称中。
+
+OpenAI CLI:
+
+```
+openai api fine_tunes.create -t test.jsonl -m ada --suffix "custom model name"
+```
+
+生成的名称将是：
+
+```
+ada:ft-your-org:custom-model-name-2022-02-15-04-21-04
+```
+
+### 分析您的微调模型
+
+我们为每个作业附加一个结果文件，一旦它完成，它将被列出。检索微调时，结果文件ID将被列出，并在查看微调事件时列出。您可以下载这些文件：
+
+OpenAI CLI:
+
+```bash
+openai api fine_tunes.results -i <YOUR_FINE_TUNE_JOB_ID>
+```
+
+CURL:
+
+```
+curl https://api.openai.com/v1/files/$RESULTS_FILE_ID/content \
+  -H "Authorization: Bearer $OPENAI_API_KEY" > results.csv
+```
+
+\_results.csv文件包含每个训练步骤的一行，其中一步骤指的是在一批数据上进行前向和后向传递的操作。除了步数，每行还包含以下与该步骤相对应的字段：
+
+* elapsed\_tokens：模型迄今为止看到的词元数（包括重复）&#x20;
+* elapsed\_examples：模型迄今为止看到的示例数（包括重复），其中一个示例是批次中的一个元素。例如，如果batch\_size = 4，则每个步骤将使elapsed\_examples增加4。
+* training\_loss：训练批次的损失&#x20;
+* training\_sequence\_accuracy：在训练批次中，模型预测的标记与真实的标记完全匹配的完成百分比。例如，如果您的数据包含完成\[\[1, 2]，\[0, 5]，\[4, 2]]，并且模型预测\[\[1, 1]，\[0, 5]，\[4, 2]]，则准确性将为2/3 = 0.67&#x20;
+* training\_token\_accuracy：模型正确预测的训练批次中的标记百分比。例如，如果您的数据包含完成\[\[1, 2]，\[0, 5]，\[4, 2]]，并且模型预测\[\[1, 1]，\[0, 5]，\[4, 2]]，则准确性将为5/6 = 0.83
+
+### 分类特定的度量标准&#x20;
+
+我们还提供了生成结果文件中的其他分类特定度量标准的选项，例如准确性和加权F1分数。这些指标定期针对整个验证集进行计算，并在微调结束时计算。您将在结果文件中看到它们作为其他列。
+
+要启用此功能，请设置--compute\_classification\_metrics参数。另外，您必须提供验证文件，并设置classification\_n\_classes参数（用于多类分类）或classification\_positive\_class参数（用于二进制分类）。
+
+OpenAI CLI:
+
+```bash
+# For multiclass classification
+openai api fine_tunes.create \
+  -t <TRAIN_FILE_ID_OR_PATH> \
+  -v <VALIDATION_FILE_OR_PATH> \
+  -m <MODEL> \
+  --compute_classification_metrics \
+  --classification_n_classes <N_CLASSES>
+
+# For binary classification
+openai api fine_tunes.create \
+  -t <TRAIN_FILE_ID_OR_PATH> \
+  -v <VALIDATION_FILE_OR_PATH> \
+  -m <MODEL> \
+  --compute_classification_metrics \
+  --classification_n_classes 2 \
+  --classification_positive_class <POSITIVE_CLASS_FROM_DATASET>
+```
+
+\
+如果你设置了--compute\_classification\_metrics，以下指标将在你的结果文件中显示：
+
+#### 对于多类分类：
+
+* classification/accuracy：准确率&#x20;
+* classification/weighted\_f1\_score：加权F1分数
+
+#### 对于二元分类
+
+以下指标基于分类阈值为0.5（即当概率> 0.5时，将一个示例分类为属于正类）。
+
+* classification/accuracy：准确率
+* &#x20;classification/precision：精确率&#x20;
+* classification/recall：召回率
+* &#x20;classification/f{beta}：F-beta分数&#x20;
+* classification/auroc：AUROC
+* &#x20;classification/auprc：AUPRC
+
+请注意，这些评估假定您使用文本标签来表示分词为单个词元的类，如上所述。如果这些条件不成立，您得到的数字可能会错误。
+
+### 验证
+
+&#x20;您可以为验证保留一些数据。验证文件与训练文件具有完全相同的格式，您的训练和验证数据应互不重叠。
+
+如果您在创建微调作业时包含验证文件，则生成的结果文件将包括在训练期间定期评估微调模型在验证数据上的表现。\
+OpenAI CLI:
+
+```bash
+openai api fine_tunes.create -t <TRAIN_FILE_ID_OR_PATH> \
+  -v <VALIDATION_FILE_ID_OR_PATH> \
+  -m <MODEL>
+```
+
+如果您提供了一个验证文件，在训练期间我们会定期计算验证数据批次上的指标。在结果文件中，您将看到以下额外的指标：
+
+* validation\_loss：验证批次的损失值。&#x20;
+* validation\_sequence\_accuracy：验证批次中完成度百分比，其中模型预测的标记与真实标记完全匹配。例如，如果您的数据包含完成度\[\[1，2]，\[0，5]，\[4，2]]，而模型预测为\[\[1，1]，\[0，5]，\[4，2]]，则准确率为2/3 = 0.67（假设batch\_size为3）。&#x20;
+* validation\_token\_accuracy：模型正确预测的验证批次中标记的百分比。例如，如果您的数据包含完成度\[\[1，2]，\[0，5]，\[4，2]]，而模型预测为\[\[1，1]，\[0，5]，\[4，2]]，则准确率为5/6 = 0.83（假设batch\_size为3）。&#x20;
+
+### 超参数&#x20;
+
+我们已选择默认超参数，可在各种用例中运行良好。唯一需要的参数是训练文件。
+
+但是，调整用于微调的超参数通常可以产生生成更高质量输出的模型。特别是，您可能想配置以下内容：
+
+* model：要微调的基础模型的名称。您可以选择“ada”、“babbage”、“curie”或“davinci”中的一个。要了解有关这些模型的更多信息，请参见模型文档。&#x20;
+* n\_epochs - 默认值为4。训练模型的时期数。一个时期指的是一次完整的通过训练数据集的循环。&#x20;
+* batch\_size - 默认值为训练集中示例数的约0.2％，上限为256。批处理大小是用于训练单个前向和后向传递的训练示例数。通常，我们发现更大的批量大小对于更大的数据集效果更好。
+* learning\_rate\_multiplier - 默认值为0.05、0.1或0.2，具体取决于最终批量大小。微调学习率是用于预训练的原始学习率乘以此乘数。我们建议尝试在0.02到0.2的范围内的值，以查看哪个产生最佳结果。从经验上看，我们发现更大的学习率往往在处理更大的批量大小时表现更好。&#x20;
+* compute\_classification\_metrics - 默认值为False。如果为True，则针对分类任务的微调，在每个时期结束时在验证集上计算分类特定的指标（准确性、F-1分数等）。 要配置这些额外的超参数，请通过OpenAI CLI的命令行标志传递它们，例如：
+
+```
+openai api fine_tunes.create \
+  -t file-JD89ePi5KMsB3Tayeli5ovfW \
+  -m ada \
+  --n_epochs 1
+```
+
+从已经进行微调的模型继续微调 如果您已经对模型进行了微调，并且现在有额外的训练数据需要加入，您可以从模型进行继续微调。这样创建的模型能够从所有训练数据中学习，而不需要重新从头开始训练。
+
+为此，在创建新的微调作业时，传递微调模型名称（例如 -m curie:ft-\<org>-\<date>）。其他训练参数无需更改，但是如果您的新训练数据比以前的训练数据小很多，您可能会发现将learning\_rate\_multiplier减少2到4倍是有用的。
+
+### 权重和偏置&#x20;
+
+您可以将微调结果与Weights & Biases同步，以跟踪实验、模型和数据集。
+
+要开始使用，您需要一个Weights & Biases帐户和一个付费的OpenAI计划。为确保您使用的是最新版本的openai和wandb，请运行:
+
+```bash
+pip install --upgrade openai wandb
+```
+
+要将您的微调与Weights＆Biases同步，请运行：
+
+```bash
+openai wandb sync
+```
+
+## 示例笔记本&#x20;
+
+### 分类&#x20;
+
+[finetuning-classification.ipynb ](https://github.com/openai/openai-cookbook/blob/main/examples/Fine-tuned\_classification.ipynb)
+
+此笔记本将演示如何微调模型，以对输入文本是否与棒球或曲棍球相关进行分类。我们将在笔记本中执行以下四个步骤：&#x20;
+
+* 数据探索将概述数据源和示例的外观。
+* 数据准备将把我们的数据源转换为可用于微调的jsonl文件。&#x20;
+* 微调将启动微调作业并解释所得到的模型性能。&#x20;
+* 使用该模型将演示如何向经过微调的模型发出请求以获取预测结果。
+
+### 回答问题
+
+[olympics-1-collect-data.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/fine-tuned\_qa/olympics-1-collect-data.ipynb)
+
+[olympics-2-create-qa.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/fine-tuned\_qa/olympics-2-create-qa.ipynb)
+
+[olympics-3-train-qa.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/fine-tuned\_qa/olympics-3-train-qa.ipynb)
+
+该项目的想法是创建一个问答模型，基于提供的几段文本。基于GPT-3模型在回答问题时表现良好，当答案包含在段落中时，但如果答案不包含在其中，则基础模型往往会尽力回答，导致混淆的答案。 为了创建仅在有足够上下文情况下才回答问题的模型，我们首先创建了一个基于文本段落的问题和答案数据集。为了训练模型只有当存在答案时才回答，在这些情况下我们还添加对抗性示例，其中问题与上下文不匹配。在这些情况下，我们要求模型输出“没有足够的上下文来回答问题”。 我们将通过三个笔记本执行此任务：&#x20;
+
+* 第一个笔记本专注于收集最近数据，在预训练期间GPT-3没有看到过这些数据。 我们选择了2020年奥运会（实际上发生在2021年夏季）作为主题，并下载了713个独特页面。 我们按单独部分组织数据集，并将其用作询问和回复问题的背景。&#x20;
+* 第二个笔记本将利用Davinci-instruct根据Wikipedia章节提出一些问题，并根据该章节回答回应那些问题。
+* &#x20;第三个笔记本将利用上下文、问句和解释对数据集来额外地创造对抗性问句和背景对, 在这种情况下, 该模型被提示以"无足够背景信息来解析此类问题" 来进行响应. 我们还将训练鉴别器模型, 以预测是否可以根据环境或其他因素来解析某一类特定类型或者所有类型 的相关内容.

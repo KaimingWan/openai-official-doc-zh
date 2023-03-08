@@ -355,11 +355,11 @@ button.onclick = function() {
 
 3. 重命名函数
 
-![](<../.gitbook/assets/image (1).png>)
+![](<../.gitbook/assets/image (1) (1).png>)
 
 4. 增加文档
 
-![](<../.gitbook/assets/image (3) (1).png>)
+![](<../.gitbook/assets/image (3).png>)
 
 ### 最佳实践&#x20;
 
