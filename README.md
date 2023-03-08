@@ -1,18 +1,12 @@
-# <center>OpenAI 官方文档中文版</center>
+# 开始
+
+## OpenAI 官方文档中文版
 
 
-<br/>
-<table>
-    <tr align="center">
-        <td><a title="OpenAI [master] 中文在线官方文档" href="https://kaimingwan.gitbook.io/openai-zhong-wen-zai-xian-wen-dang/" target="_blank"><font size="5">OpenAI 中文在线官方文档</font></a></td>
-        <td><a title="OpenAI 官方文档" href="https://platform.openai.com/docs/introduction" target="_blank"><font size="5">OpenAI 官方文档</font></a></td>
-    </tr>
-</table>
-<br/>
 
----
+| [OpenAI 中文在线官方文档](https://kaimingwan.gitbook.io/openai-zhong-wen-zai-xian-wen-dang/) | [OpenAI 官方文档](https://platform.openai.com/docs/introduction) |
+| ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
 
+## 介绍
 
-# 介绍
-自己看OpenAI官方文档学习了解时借用ChatGPT的能力顺手翻译了下OpenAI的官方文档。翻译中有很多地方可能翻译的比较粗糙，多多包含。有兴趣完善翻译内容的也可以提交PR，谢谢。
-
+我翻译了OpenAI官方文档，旨在帮助读者更好地理解和学习OpenAI。然而，我承认我的翻译可能存在不准确或不严谨的地方，因此文中可能会有一些错误或瑕疵。如果您发现了任何问题，欢迎提交PR（Pull Request），帮助完善文档。感谢您的支持。
