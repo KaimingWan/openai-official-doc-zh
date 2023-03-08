@@ -302,7 +302,7 @@ for row in df.iterrows():
 
 再次可视化更新后的直方图可以帮助确认行是否已成功拆分为缩短的部分。
 
-![](<../../.gitbook/assets/image (2).png>)
+![](<../../.gitbook/assets/image (2) (1).png>)
 
 现在将内容拆分成较小的块，并且可以向OpenAI API发送简单请求，指定使用新的text-embedding-ada-002模型来创建嵌入：
 

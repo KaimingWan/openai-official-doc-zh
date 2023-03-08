@@ -355,7 +355,7 @@ button.onclick = function() {
 
 3. 重命名函数
 
-![](<../.gitbook/assets/image (1) (1).png>)
+![](<../.gitbook/assets/image (1).png>)
 
 4. 增加文档
 

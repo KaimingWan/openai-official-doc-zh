@@ -27,10 +27,10 @@ image_url = response['data'][0]['url']
 
 描述得越详细，你或你的最终用户得到想要的结果的可能性就越大。你可以在 DALL·E 预览应用程序中探索更多提示灵感的示例。这里是一个快速的例子：
 
-| 提示                                  | 生成                                      |
-| ----------------------------------- | --------------------------------------- |
-| 一只白色暹罗猫                             | ![](<../.gitbook/assets/image (3).png>) |
-| 一张特写的白色暹罗猫的摄影画作，瞪大好奇的眼睛，耳朵被背景的光线照亮。 | ![](<../.gitbook/assets/image (1).png>) |
+| 提示                                  | 生成                                       |
+| ----------------------------------- | ---------------------------------------- |
+| 一只白色暹罗猫                             | ![](<../.gitbook/assets/image (13).png>) |
+| 一张特写的白色暹罗猫的摄影画作，瞪大好奇的眼睛，耳朵被背景的光线照亮。 | ![](../.gitbook/assets/image.png)        |
 
 每张图片都可以通过response\_format参数以URL或Base64数据的形式返回。URL会在一小时后过期。
 
@@ -49,7 +49,7 @@ response = openai.Image.create_edit(
 image_url = response['data'][0]['url']
 ```
 
-![](<../.gitbook/assets/image (13).png>)
+![](<../.gitbook/assets/image (2).png>)
 
 > 提示词：一个阳光明媚的室内休息区，里面有一个装着火烈鸟的游泳池。
 
@@ -68,7 +68,7 @@ response = openai.Image.create_variation(
 image_url = response['data'][0]['url']
 ```
 
-![](../.gitbook/assets/image.png)
+![](<../.gitbook/assets/image (3).png>)
 
 与编辑端点类似，输入图像必须是小于4MB的正方形PNG图像。
 
