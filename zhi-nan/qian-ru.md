@@ -90,3 +90,19 @@ curl https://api.openai.com/v1/embeddings \
 | ---------------------- | ------------ | ----- | ---- |
 | text-embedding-ada-002 | cl100k\_base | 8191  | 1536 |
 
+### 第一代模型（不推荐）
+
+官方也不推荐使用其他的第一代模型，这边就不翻译了
+
+## 使用案例
+
+这里我们展示一些代表性的使用案例。接下来的例子中，我们将使用[亚马逊美食评论数据集](https://www.kaggle.com/snap/amazon-fine-food-reviews)。
+
+### 获取嵌入
+
+该数据集包含截至2012年10月亚马逊用户留下的共568,454条食品评论。我们将使用最近1,000条评论的子集进行说明。这些评论是用英语编写的，往往是积极或消极的。每个评论都有一个ProductId、UserId、Score、评价标题（Summary）和评价正文（Text）。例如：
+
+| PRODUCT ID | USER ID        | SCORE | SUMMARY               | TEXT                                              |
+| ---------- | -------------- | ----- | --------------------- | ------------------------------------------------- |
+| B001E4KFG0 | A3SGXH7AUHU8GW | 5     | Good Quality Dog Food | I have bought several of the Vitality canned...   |
+| B00813GRG4 | A1D87F6ZCVE5NK | 1     | Not as Advertised     | Product arrived labeled as Jumbo Salted Peanut... |
