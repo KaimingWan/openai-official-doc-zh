@@ -170,4 +170,82 @@ def completions_with_backoff(**kwargs):
 
 再次声明，OpenAI 对此解决方案的安全性或效率不作任何保证，但它可以成为您自己解决方案的良好起点。
 
-###
+### 批量请求
+
+&#x20;OpenAI API 对每分钟的请求数和令牌数有单独的限制。&#x20;
+
+如果您达到了每分钟请求次数的限制，但是在每分钟令牌方面有可用容量，则可以将多个任务分批处理到每个请求中，以增加吞吐量。这将允许您处理更多的令牌，特别是对于我们较小的模型。&#x20;
+
+发送一批提示与正常 API 调用完全相同，只需将字符串列表传递给 prompt 参数即可。
+
+#### 不使用批处理的例子：
+
+```python
+import openai
+ 
+num_stories = 10
+prompt = "Once upon a time,"
+ 
+# serial example, with one story completion per request
+for _ in range(num_stories):
+    response = openai.Completion.create(
+        model="curie",
+        prompt=prompt,
+        max_tokens=20,
+    )
+    # print story
+    print(prompt + response.choices[0].text)
+```
+
+使用批处理的例子
+
+```python
+import openai  # for making OpenAI API requests
+ 
+ 
+num_stories = 10
+prompts = ["Once upon a time,"] * num_stories
+ 
+# batched example, with 10 story completions per request
+response = openai.Completion.create(
+    model="curie",
+    prompt=prompts,
+    max_tokens=20,
+)
+ 
+# match completions to prompts by index
+stories = [""] * len(prompts)
+for choice in response.choices:
+    stories[choice.index] = prompts[choice.index] + choice.text
+ 
+# print stories
+for story in stories:
+    print(story)
+```
+
+> 警告：响应对象可能不会按提示的顺序返回完成情况，因此请始终记住使用索引字段将响应与提示匹配。
+
+## 请求增加&#x20;
+
+### 我应该在什么时候考虑申请速率限制增加？&#x20;
+
+我们的默认速率限制有助于最大化稳定性并防止滥用我们的API。我们会增加限制以启用高流量应用程序，因此申请速率限制增加的最佳时间是当您认为您拥有必要的流量数据来支持提高速率限制的强有力理由时。没有支持数据的大幅度速率限制增加请求不太可能被批准。如果您正在准备产品发布，请通过10天分阶段发布获得相关数据。
+
+请记住，速率限制增加有时需要7-10天，因此如果存在支持当前增长数字将达到您的速率限制所需数据，则尽早计划并提交是明智之举。&#x20;
+
+### 我的速率限制增加请求会被拒绝吗？
+
+&#x20;一个常见原因是缺乏证明其合理性所需数据而导致拒绝。下面提供了数值示例，展示如何最好地支持一个速率上升请求，并尽力批准所有符合安全策略和显示支持数据要求的请求。我们致力于使开发人员能够使用我们的API进行规模化和成功。
+
+### &#x20;我已经为我的文本/代码API实现了指数退避算法，但仍然出现错误。如何提高我的频次上线？
+
+&#x20;目前，我们不支持提高免费测试端点（例如编辑端点）等功能。 我们也不会提高ChatGPT频次上线，但你可以参与ChatGPT专业版访问列表。
+
+我们知道受到频次上线约束可能带来多大挫败感，并且很想为每个人都提高默认值。 但是由于共享容量约束，在Rate Limit Increase Request表单中只能批准付费客户证明需要通过审查后方可进行频次上线调整 。 为了帮助评估您真正需要哪些内容，请在“分享需求证据”部分中提供关于当前使用情况或基于历史用户活动预测 的统计信息 。 如果没有这些信息，则建议采取逐步释放方法：首先以当前比例释放服务给一小部分用户，在10个工作日内收集使用情况数据 ，然后根据该数据提交正式频次上线调整请求以供审核和批准。&#x20;
+
+如果您提交了申请并获得批准，则在7-10个工作日内通知您审批结果。 以下是填写此表格的一些示例：
+
+| 模型         | 预估词元数/分钟 | 预估请求数 | 用户数    | 需要的证据                                                                         | 1小时最大吞吐成本 |
+| ---------- | -------- | ----- | ------ | ----------------------------------------------------------------------------- | --------- |
+| DALL-E API | N/A      | 50    | 1000   | 我们的应用目前正在生产中，根据过去的流量情况，我们每分钟大约发出10个请求。                                        | $60       |
+| DALL-E API | N/A      | 150   | 10,000 | 我们的应用在App Store中越来越受欢迎，我们开始遇到速率限制。我们能否获得默认限制的三倍，即每分钟50个图像？如果需要更多，我们将提交新表格。谢谢！ | $180      |
