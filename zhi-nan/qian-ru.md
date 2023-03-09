@@ -102,7 +102,29 @@ curl https://api.openai.com/v1/embeddings \
 
 该数据集包含截至2012年10月亚马逊用户留下的共568,454条食品评论。我们将使用最近1,000条评论的子集进行说明。这些评论是用英语编写的，往往是积极或消极的。每个评论都有一个ProductId、UserId、Score、评价标题（Summary）和评价正文（Text）。例如：
 
-| PRODUCT ID | USER ID        | SCORE | SUMMARY               | TEXT                                              |
-| ---------- | -------------- | ----- | --------------------- | ------------------------------------------------- |
-| B001E4KFG0 | A3SGXH7AUHU8GW | 5     | Good Quality Dog Food | I have bought several of the Vitality canned...   |
-| B00813GRG4 | A1D87F6ZCVE5NK | 1     | Not as Advertised     | Product arrived labeled as Jumbo Salted Peanut... |
+| 产品 ID      | 用户 ID          | 得分 | 总结     | 文本               |
+| ---------- | -------------- | -- | ------ | ---------------- |
+| B001E4KFG0 | A3SGXH7AUHU8GW | 5  | 优质狗粮   | 我已经买了几罐活力饮料...   |
+| B00813GRG4 | A1D87F6ZCVE5NK | 1  | 不如广告所述 | 产品标签上写着巨型盐腌花生... |
+
+我们将把评论摘要和评论文本合并成一个组合文本。模型将对这个组合文本进行编码，并输出一个单一的向量嵌入。
+
+[Obtain\_dataset.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Obtain\_dataset.ipynb)
+
+```python
+def get_embedding(text, model="text-embedding-ada-002"):
+   text = text.replace("\n", " ")
+   return openai.Embedding.create(input = [text], model=model)['data'][0]['embedding']
+ 
+df['ada_embedding'] = df.combined.apply(lambda x: get_embedding(x, model='text-embedding-ada-002'))
+df.to_csv('output/embedded_1k_reviews.csv', index=False)
+```
+
+要从保存的文件中加载数据，您可以运行以下命令：
+
+```python
+import pandas as pd
+ 
+df = pd.read_csv('output/embedded_1k_reviews.csv')
+df['ada_embedding'] = df.ada_embedding.apply(eval).apply(np.array)
+```
