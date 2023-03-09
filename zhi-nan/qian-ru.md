@@ -128,3 +128,43 @@ import pandas as pd
 df = pd.read_csv('output/embedded_1k_reviews.csv')
 df['ada_embedding'] = df.ada_embedding.apply(eval).apply(np.array)
 ```
+
+### 数据2D可视化
+
+[Visualizing\_embeddings\_in\_2D.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Visualizing\_embeddings\_in\_2D.ipynb)
+
+嵌入的大小取决于底层模型的复杂性。为了可视化这个高维数据，我们使用t-SNE算法将数据转换成二维。 我们根据评论者给出的星级评分来着色每个单独的评论：&#x20;
+
+* 1星：红色&#x20;
+* 2星：深橙色&#x20;
+* 3星：金色&#x20;
+* 4星：青绿色&#x20;
+* 5星：深绿色
+
+![](../.gitbook/assets/image.png)
+
+可视化似乎产生了大约3个聚类，其中一个主要是负面评价。
+
+```python
+import pandas as pd
+from sklearn.manifold import TSNE
+import matplotlib.pyplot as plt
+import matplotlib
+ 
+df = pd.read_csv('output/embedded_1k_reviews.csv')
+matrix = df.ada_embedding.apply(eval).to_list()
+ 
+# Create a t-SNE model and transform the data
+tsne = TSNE(n_components=2, perplexity=15, random_state=42, init='random', learning_rate=200)
+vis_dims = tsne.fit_transform(matrix)
+ 
+colors = ["red", "darkorange", "gold", "turquiose", "darkgreen"]
+x = [x for x,y in vis_dims]
+y = [y for x,y in vis_dims]
+color_indices = df.Score.values - 1
+ 
+colormap = matplotlib.colors.ListedColormap(colors)
+plt.scatter(x, y, c=color_indices, cmap=colormap, alpha=0.3)
+plt.title("Amazon ratings visualized in language using t-SNE")
+```
+
