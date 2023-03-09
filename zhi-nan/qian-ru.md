@@ -188,3 +188,35 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 ```
+
+#### 使用嵌入特征的回归&#x20;
+
+嵌入提供了一种优雅的方法来预测数值。在这个例子中，我们根据评论文本预测评论者的星级评分。由于嵌入所包含的语义信息非常丰富，即使只有很少的评论，也可以得到不错的预测结果。&#x20;
+
+我们假设得分是1到5之间的连续变量，并允许算法预测任何浮点值。机器学习算法将预测值与真实得分之间的距离最小化，并取得了0.39 的平均绝对误差，这意味着平均而言，预测偏差不到半颗星。
+
+```python
+from sklearn.ensemble import RandomForestRegressor
+ 
+rfr = RandomForestRegressor(n_estimators=100)
+rfr.fit(X_train, y_train)
+preds = rfr.predict(X_test)
+```
+
+### 使用嵌入特征进行分类
+
+[Classification\_using\_embeddings.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Classification\_using\_embeddings.ipynb)
+
+这一次，我们不再让算法预测1到5之间的任意值，而是尝试将评论中的星级精确分类为5个档次，范围从1星到5星。&#x20;
+
+经过训练后，模型学会了更好地预测1和5星评价，而对于更微妙的评价（2-4星），由于情感表达不够极端可能效果较差。
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, accuracy_score
+ 
+clf = RandomForestClassifier(n_estimators=100)
+clf.fit(X_train, y_train)
+preds = clf.predict(X_test)
+```
+
