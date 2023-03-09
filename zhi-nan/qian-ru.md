@@ -141,7 +141,7 @@ df['ada_embedding'] = df.ada_embedding.apply(eval).apply(np.array)
 * 4星：青绿色&#x20;
 * 5星：深绿色
 
-![](../.gitbook/assets/image.png)
+![](<../.gitbook/assets/image (15).png>)
 
 可视化似乎产生了大约3个聚类，其中一个主要是负面评价。
 
@@ -220,3 +220,38 @@ clf.fit(X_train, y_train)
 preds = clf.predict(X_test)
 ```
 
+### 零样本分类
+
+[Zero-shot\_classification\_with\_embeddings.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Zero-shot\_classification\_with\_embeddings.ipynb)
+
+我们可以使用嵌入来进行零样本分类，而无需任何标记的训练数据。对于每个类别，我们将类名或类的简短描述嵌入其中。为了以零样本方式对一些新文本进行分类，我们将其嵌入与所有类别嵌入进行比较，并预测相似度最高的类别。
+
+```python
+from openai.embeddings_utils import cosine_similarity, get_embedding
+ 
+df= df[df.Score!=3]
+df['sentiment'] = df.Score.replace({1:'negative', 2:'negative', 4:'positive', 5:'positive'})
+ 
+labels = ['negative', 'positive']
+label_embeddings = [get_embedding(label, model=model) for label in labels]
+ 
+def label_score(review_embedding, label_embeddings):
+   return cosine_similarity(review_embedding, label_embeddings[1]) - cosine_similarity(review_embedding, label_embeddings[0])
+ 
+prediction = 'positive' if label_score('Sample Review', label_embeddings) > 0 else 'negative'
+```
+
+### 获取用户和产品嵌入以进行冷启动推荐
+
+[User\_and\_product\_embeddings.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/User\_and\_product\_embeddings.ipynb)
+
+我们可以通过对用户所有评论进行平均来获得用户嵌入。同样地，我们可以通过对有关该产品的所有评论进行平均来获得产品嵌入。为了展示这种方法的实用性，我们使用50k个评论的子集以涵盖更多用户和产品的评论。&#x20;
+
+我们在一个单独的测试集上评估这些嵌入的实用性，在那里我们绘制用户和产品嵌入相似度作为评分函数。有趣的是，基于这种方法，即使在用户收到产品之前，我们也能比随机预测他们是否会喜欢该产品。
+
+![](<../.gitbook/assets/image (6).png>)
+
+```
+user_embeddings = df.groupby('UserId').ada_embedding.apply(np.mean)
+prod_embeddings = df.groupby('ProductId').ada_embedding.apply(np.mean)
+```
