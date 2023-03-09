@@ -323,7 +323,7 @@ button.onclick = function() {
 
 “completions” 端点还支持通过提供后缀提示来在代码中插入代码，除了前缀提示。这可以用于在函数或文件的中间插入完成(下图绿色部分由AI完成补全)。&#x20;
 
-![](<../.gitbook/assets/image (8).png>)
+![](<../.gitbook/assets/image (8) (1).png>)
 
 通过为模型提供额外的上下文，它可以更加可控。然而，这对于模型来说是一个更受限制和具有挑战性的任务。
 
@@ -355,11 +355,11 @@ button.onclick = function() {
 
 3. 重命名函数
 
-![](<../.gitbook/assets/image (1) (1).png>)
+![](<../.gitbook/assets/image (1).png>)
 
 4. 增加文档
 
-![](<../.gitbook/assets/image (3) (1).png>)
+![](<../.gitbook/assets/image (3).png>)
 
 ### 最佳实践&#x20;
 

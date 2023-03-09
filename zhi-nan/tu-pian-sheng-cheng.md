@@ -29,8 +29,8 @@ image_url = response['data'][0]['url']
 
 | 提示                                  | 生成                                      |
 | ----------------------------------- | --------------------------------------- |
-| 一只白色暹罗猫                             | ![](../.gitbook/assets/image.png)       |
-| 一张特写的白色暹罗猫的摄影画作，瞪大好奇的眼睛，耳朵被背景的光线照亮。 | ![](<../.gitbook/assets/image (1).png>) |
+| 一只白色暹罗猫                             | ![](<../.gitbook/assets/image (5).png>) |
+| 一张特写的白色暹罗猫的摄影画作，瞪大好奇的眼睛，耳朵被背景的光线照亮。 | ![](../.gitbook/assets/image.png)       |
 
 每张图片都可以通过response\_format参数以URL或Base64数据的形式返回。URL会在一小时后过期。
 
@@ -68,7 +68,7 @@ response = openai.Image.create_variation(
 image_url = response['data'][0]['url']
 ```
 
-![](<../.gitbook/assets/image (2).png>)
+![](<../.gitbook/assets/image (9).png>)
 
 与编辑端点类似，输入图像必须是小于4MB的正方形PNG图像。
 
