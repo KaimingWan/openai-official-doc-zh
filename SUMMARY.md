@@ -1,6 +1,7 @@
 # Table of contents
 
-* [开始](README.md)
+* [修订记录](README.md)
+* [开始](<README (1).md>)
   * [介绍](kai-shi/jie-shao.md)
   * [快速开始](kai-shi/kuai-su-kai-shi.md)
   * [库](kai-shi/ku.md)

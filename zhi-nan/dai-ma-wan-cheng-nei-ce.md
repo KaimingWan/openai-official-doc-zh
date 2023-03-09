@@ -347,7 +347,7 @@ button.onclick = function() {
 
 1. 编写一个函数
 
-![](<../.gitbook/assets/image (10).png>)
+![](<../.gitbook/assets/image (10) (1).png>)
 
 2. 重构代码
 
@@ -359,7 +359,7 @@ button.onclick = function() {
 
 4. 增加文档
 
-![](<../.gitbook/assets/image (3).png>)
+![](<../.gitbook/assets/image (3) (1).png>)
 
 ### 最佳实践&#x20;
 
