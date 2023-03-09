@@ -141,7 +141,7 @@ df['ada_embedding'] = df.ada_embedding.apply(eval).apply(np.array)
 * 4星：青绿色&#x20;
 * 5星：深绿色
 
-![](<../.gitbook/assets/image (7).png>)
+![](<../.gitbook/assets/image (2).png>)
 
 可视化似乎产生了大约3个聚类，其中一个主要是负面评价。
 
@@ -249,7 +249,7 @@ prediction = 'positive' if label_score('Sample Review', label_embeddings) > 0 el
 
 我们在一个单独的测试集上评估这些嵌入的实用性，在那里我们绘制用户和产品嵌入相似度作为评分函数。有趣的是，基于这种方法，即使在用户收到产品之前，我们也能比随机预测他们是否会喜欢该产品。
 
-![](<../.gitbook/assets/image (3).png>)
+![](<../.gitbook/assets/image (5).png>)
 
 ```
 user_embeddings = df.groupby('UserId').ada_embedding.apply(np.mean)
@@ -318,3 +318,34 @@ def search_functions(df, code_query, n=3, pprint=True, n_lines=7):
    return res
 res = search_functions(df, 'Completions API tests', n=3)
 ```
+
+### 使用嵌入推荐
+
+[Recommendation\_using\_embeddings.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Recommendation\_using\_embeddings.ipynb)
+
+因为嵌入向量之间的距离越短，表示它们之间的相似度越大，所以嵌入可以用于推荐。&#x20;
+
+下面我们展示一个基本的推荐器。它接收一组字符串和一个“源”字符串，计算它们的嵌入向量，然后返回按相似度从高到低排名的字符串列表。作为具体例子，下面链接的笔记本将这个函数应用于 AG 新闻数据集（采样至 2,000 条新闻文章描述），以返回与任何给定源文章最相似的前 5 篇文章。
+
+```python
+def recommendations_from_strings(
+   strings: List[str],
+   index_of_source_string: int,
+   model="text-embedding-ada-002",
+) -> List[int]:
+   """Return nearest neighbors of a given string."""
+
+   # get embeddings for all strings
+   embeddings = [embedding_from_string(string, model=model) for string in strings]
+   
+   # get the embedding of the source string
+   query_embedding = embeddings[index_of_source_string]
+   
+   # get distances between the source embedding and other embeddings (function from embeddings_utils.py)
+   distances = distances_from_embeddings(query_embedding, embeddings, distance_metric="cosine")
+   
+   # get indices of nearest neighbors (function from embeddings_utils.py)
+   indices_of_nearest_neighbors = indices_of_nearest_neighbors_from_distances(distances)
+   return indices_of_nearest_neighbors
+```
+

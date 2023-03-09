@@ -347,7 +347,7 @@ button.onclick = function() {
 
 1. 编写一个函数
 
-![](<../.gitbook/assets/image (10) (1).png>)
+![](<../.gitbook/assets/image (10).png>)
 
 2. 重构代码
 
