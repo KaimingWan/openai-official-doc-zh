@@ -4,8 +4,8 @@
 
 
 
-| [OpenAI 中文在线官方文档](https://kaimingwan.gitbook.io/openai-zhong-wen-zai-xian-wen-dang/) | [OpenAI 官方文档](https://platform.openai.com/docs/introduction) |
-| ------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
+| [OpenAI 中文在线官方文档](https://openaidoc.kaimingwan.com/) | [OpenAI 官方文档](https://platform.openai.com/docs/introduction) |
+| ---------------------------------------------------- | ------------------------------------------------------------ |
 
 ## 介绍
 
