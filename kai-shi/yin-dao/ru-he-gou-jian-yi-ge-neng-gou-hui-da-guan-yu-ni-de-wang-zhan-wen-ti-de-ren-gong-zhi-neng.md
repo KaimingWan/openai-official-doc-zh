@@ -239,7 +239,7 @@ df['n_tokens'] = df.text.apply(lambda x: len(tokenizer.encode(x)))
 df.n_tokens.hist()
 ```
 
-![](<../../.gitbook/assets/image (7).png>)
+![](<../../.gitbook/assets/image (7) (1).png>)
 
 最新的嵌入模型可以处理多达8191个输入标记的输入，因此大多数行不需要任何拆分，但对于每个爬取的子页面可能并非都是这样，因此下一个代码块将把更长的行拆分成较小的块。
 

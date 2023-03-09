@@ -141,7 +141,7 @@ df['ada_embedding'] = df.ada_embedding.apply(eval).apply(np.array)
 * 4星：青绿色&#x20;
 * 5星：深绿色
 
-![](<../.gitbook/assets/image (15).png>)
+![](<../.gitbook/assets/image (7).png>)
 
 可视化似乎产生了大约3个聚类，其中一个主要是负面评价。
 
@@ -249,9 +249,72 @@ prediction = 'positive' if label_score('Sample Review', label_embeddings) > 0 el
 
 我们在一个单独的测试集上评估这些嵌入的实用性，在那里我们绘制用户和产品嵌入相似度作为评分函数。有趣的是，基于这种方法，即使在用户收到产品之前，我们也能比随机预测他们是否会喜欢该产品。
 
-![](<../.gitbook/assets/image (6).png>)
+![](<../.gitbook/assets/image (3).png>)
 
 ```
 user_embeddings = df.groupby('UserId').ada_embedding.apply(np.mean)
 prod_embeddings = df.groupby('ProductId').ada_embedding.apply(np.mean)
+```
+
+### 聚类
+
+[Clustering.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Clustering.ipynb)\
+
+
+聚类是理解大量文本数据的一种方法。嵌入对于这个任务非常有用，因为它们提供了每个文本的语义向量表示。因此，在无监督的情况下，聚类将揭示我们数据集中隐藏的分组。&#x20;
+
+在这个例子中，我们发现四个不同的簇：一个专注于狗粮，一个专注于负面评论，另外两个则是关于正面评论。
+
+![](../.gitbook/assets/image.png)
+
+```python
+import numpy as np
+from sklearn.cluster import KMeans
+ 
+matrix = np.vstack(df.ada_embedding.values)
+n_clusters = 4
+ 
+kmeans = KMeans(n_clusters = n_clusters, init='k-means++', random_state=42)
+kmeans.fit(matrix)
+df['Cluster'] = kmeans.labels_
+```
+
+### 使用嵌入进行文本搜索
+
+[Semantic\_text\_search\_using\_embeddings.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Semantic\_text\_search\_using\_embeddings.ipynb)
+
+为了检索出最相关的文档，我们使用查询嵌入向量和每个文档之间的余弦相似度，并返回得分最高的文档。
+
+```python
+from openai.embeddings_utils import get_embedding, cosine_similarity
+ 
+def search_reviews(df, product_description, n=3, pprint=True):
+   embedding = get_embedding(product_description, model='text-embedding-ada-002')
+   df['similarities'] = df.ada_embedding.apply(lambda x: cosine_similarity(x, embedding))
+   res = df.sort_values('similarities', ascending=False).head(n)
+   return res
+ 
+res = search_reviews(df, 'delicious beans', n=3)
+```
+
+### 使用嵌入进行代码搜索
+
+[Code\_search.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Code\_search.ipynb)
+
+代码搜索与基于嵌入式文本搜索类似。我们提供一种从给定存储库中的所有Python文件中提取Python函数的方法。然后，每个函数都由text-embedding-ada-002模型进行索引。&#x20;
+
+要执行代码搜索，我们使用相同的模型将查询以自然语言形式进行嵌入。然后，我们计算结果查询嵌入和每个函数嵌入之间的余弦相似度。最高余弦相似度结果最相关。
+
+```python
+from openai.embeddings_utils import get_embedding, cosine_similarity
+ 
+df['code_embedding'] = df['code'].apply(lambda x: get_embedding(x, model='text-embedding-ada-002'))
+ 
+def search_functions(df, code_query, n=3, pprint=True, n_lines=7):
+   embedding = get_embedding(code_query, model='text-embedding-ada-002')
+   df['similarities'] = df.code_embedding.apply(lambda x: cosine_similarity(x, embedding))
+ 
+   res = df.sort_values('similarities', ascending=False).head(n)
+   return res
+res = search_functions(df, 'Completions API tests', n=3)
 ```

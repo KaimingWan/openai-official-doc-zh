@@ -82,7 +82,7 @@ OpenAI已经训练了先进的语言模型，非常擅长理解和生成文本�
 I have an orange cat named Butterscotch.
 ```
 
-![](<../.gitbook/assets/image (6) (1).png>)
+![](<../.gitbook/assets/image (6).png>)
 
 像“猫(cat)”这样的常见词是一个单一的词元，而不太常见的词通常被分解成多个词元。例如，“Butterscotch”翻译为四个词元：“But”，“ters”，“cot”和“ch”。许多词元以空格开头，例如“ hello”和“ bye”。给定一些文本，模型确定下一个最有可能出现的词元。例如，“Horses are my favorite”的文本最有可能跟随词元“ animal”。
 
