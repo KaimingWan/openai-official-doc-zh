@@ -168,3 +168,23 @@ plt.scatter(x, y, c=color_indices, cmap=colormap, alpha=0.3)
 plt.title("Amazon ratings visualized in language using t-SNE")
 ```
 
+### 将嵌入作为文本特征编码器用于机器学习算法
+
+[Regression\_using\_embeddings.ipynb](https://github.com/openai/openai-cookbook/blob/main/examples/Regression\_using\_embeddings.ipynb)
+
+嵌入可以作为机器学习模型中通用的自由文本特征编码器。如果一些相关输入是自由文本，那么加入嵌入将提高任何机器学习模型的性能。嵌入也可以作为ML模型中分类特征编码器使用。如果分类变量名称有意义且数量众多（例如职位名称），则此方法最具价值。相似度嵌入通常比搜索嵌入在此任务上表现更好。&#x20;
+
+我们观察到，通常情况下，嵌入表示的信息密度很高。例如，使用SVD或PCA降低输入维数即使只有10％，在特定任务的下游性能方面通常会导致更差的结果。
+
+&#x20;该代码将数据分成训练集和测试集，并将被以下两个用例使用：回归和分类。
+
+```python
+from sklearn.model_selection import train_test_split
+ 
+X_train, X_test, y_train, y_test = train_test_split(
+    list(df.ada_embedding.values),
+    df.Score,
+    test_size = 0.2,
+    random_state=42
+)
+```
