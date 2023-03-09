@@ -141,7 +141,7 @@ df['ada_embedding'] = df.ada_embedding.apply(eval).apply(np.array)
 * 4星：青绿色&#x20;
 * 5星：深绿色
 
-![](<../.gitbook/assets/image (2).png>)
+![](../.gitbook/assets/image.png)
 
 可视化似乎产生了大约3个聚类，其中一个主要是负面评价。
 
@@ -249,7 +249,7 @@ prediction = 'positive' if label_score('Sample Review', label_embeddings) > 0 el
 
 我们在一个单独的测试集上评估这些嵌入的实用性，在那里我们绘制用户和产品嵌入相似度作为评分函数。有趣的是，基于这种方法，即使在用户收到产品之前，我们也能比随机预测他们是否会喜欢该产品。
 
-![](<../.gitbook/assets/image (4).png>)
+![](<../.gitbook/assets/image (7).png>)
 
 ```
 user_embeddings = df.groupby('UserId').ada_embedding.apply(np.mean)
@@ -265,7 +265,7 @@ prod_embeddings = df.groupby('ProductId').ada_embedding.apply(np.mean)
 
 在这个例子中，我们发现四个不同的簇：一个专注于狗粮，一个专注于负面评论，另外两个则是关于正面评论。
 
-![](../.gitbook/assets/image.png)
+![](<../.gitbook/assets/image (4).png>)
 
 ```python
 import numpy as np
@@ -355,7 +355,7 @@ def recommendations_from_strings(
 
 ### 社会偏见&#x20;
 
-限制：模型通过刻板印象或对某些群体的负面情感编码了社会偏见。 我们通过运行SEAT（May等人，2019）和Winogender（Rudinger等人，2018）基准测试发现了我们模型中存在偏差的证据。这些基准测试共包括7个测试，用于衡量当应用于性别化名称、地区名称和一些刻板印象时，模型是否包含隐含偏见。&#x20;
+限制：模型通过刻板印象或对某些群体的负面情感编码了社会偏见。 我们通过运行SEAT（[May等人，2019](https://arxiv.org/abs/1903.10561)）和Winogender（[Rudinger等人，2018](https://arxiv.org/abs/1804.09301)）基准测试发现了我们模型中存在偏差的证据。这些基准测试共包括7个测试，用于衡量当应用于性别化名称、地区名称和一些刻板印象时，模型是否包含隐含偏见。&#x20;
 
 例如，我们发现与非洲裔美国人姓名相比，我们的模型更强烈地将欧洲裔美国人姓名与积极情感联系起来，并将负面刻板印象与黑人女性联系起来。 这些基准测试有若干局限性：(a) 它们可能无法推广到您特定的使用案例中；(b) 它们仅针对可能出现的很小一部分社会偏见进行测试。
 
@@ -379,7 +379,7 @@ num_tokens_from_string("tiktoken is great!", "cl100k_base")
 
 对于像text-embedding-ada-002这样的第二代嵌入模型，请使用cl100k\_base编码。&#x20;
 
-更多细节和示例代码在OpenAI Cookbook指南中[如何使用tiktoken计算词元中](https://github.com/openai/openai-cookbook/blob/main/examples/How\_to\_count\_tokens\_with\_tiktoken.ipynb)[#ru-he-huo-qu-qian-ru](qian-ru.md#ru-he-huo-qu-qian-ru "mention")。&#x20;
+更多细节和示例代码在OpenAI Cookbook指南中[如何使用tiktoken计算词元中](https://github.com/openai/openai-cookbook/blob/main/examples/How\_to\_count\_tokens\_with\_tiktoken.ipynb)。&#x20;
 
 ### 如何快速检索K个最近的嵌入向量？&#x20;
 
