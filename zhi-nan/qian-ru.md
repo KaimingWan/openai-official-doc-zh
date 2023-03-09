@@ -249,7 +249,7 @@ prediction = 'positive' if label_score('Sample Review', label_embeddings) > 0 el
 
 我们在一个单独的测试集上评估这些嵌入的实用性，在那里我们绘制用户和产品嵌入相似度作为评分函数。有趣的是，基于这种方法，即使在用户收到产品之前，我们也能比随机预测他们是否会喜欢该产品。
 
-![](<../.gitbook/assets/image (5).png>)
+![](<../.gitbook/assets/image (4).png>)
 
 ```
 user_embeddings = df.groupby('UserId').ada_embedding.apply(np.mean)
@@ -349,3 +349,52 @@ def recommendations_from_strings(
    return indices_of_nearest_neighbors
 ```
 
+## 限制和风险&#x20;
+
+在某些情况下，我们的嵌入模型可能不可靠或存在社会风险，并且在没有缓解措施的情况下可能会造成伤害。&#x20;
+
+### 社会偏见&#x20;
+
+限制：模型通过刻板印象或对某些群体的负面情感编码了社会偏见。 我们通过运行SEAT（May等人，2019）和Winogender（Rudinger等人，2018）基准测试发现了我们模型中存在偏差的证据。这些基准测试共包括7个测试，用于衡量当应用于性别化名称、地区名称和一些刻板印象时，模型是否包含隐含偏见。&#x20;
+
+例如，我们发现与非洲裔美国人姓名相比，我们的模型更强烈地将欧洲裔美国人姓名与积极情感联系起来，并将负面刻板印象与黑人女性联系起来。 这些基准测试有若干局限性：(a) 它们可能无法推广到您特定的使用案例中；(b) 它们仅针对可能出现的很小一部分社会偏见进行测试。
+
+&#x20;这些测试是初步结果，请根据您特定使用案例运行相关测试。这些结果应被视为该现象存在的证据而非其在您使用案例中明确描述。请参阅我们的使用政策以获取更多详细信息和指导建议。 如果您有任何问题，请通过聊天联系支持团队；我们很乐意为此提供建议。
+
+### &#x20;盲目忽略最近事件&#x20;
+
+限制：模型缺乏关于2020年8月之后发生事件的知识。 我们的模型是训练在数据集上，在其中包含了截至2020年8月真实世界事件方面一定程度上信息。如果你依赖于代表最近事件的模型，则它们可能不会表现得很好 。常问问题 如何确定我要嵌入字符串之前有多少词元？ 在Python中, 您可以使用OpenAI 的tokenizer tiktoken 将一个字符串分割成词元. 示例代码:
+
+```python
+import tiktoken
+
+def num_tokens_from_string(string: str, encoding_name: str) -> int:
+    """Returns the number of tokens in a text string."""
+    encoding = tiktoken.get_encoding(encoding_name)
+    num_tokens = len(encoding.encode(string))
+    return num_tokens
+
+num_tokens_from_string("tiktoken is great!", "cl100k_base")
+```
+
+对于像text-embedding-ada-002这样的第二代嵌入模型，请使用cl100k\_base编码。&#x20;
+
+更多细节和示例代码在OpenAI Cookbook指南中[如何使用tiktoken计算词元中](https://github.com/openai/openai-cookbook/blob/main/examples/How\_to\_count\_tokens\_with\_tiktoken.ipynb)[#ru-he-huo-qu-qian-ru](qian-ru.md#ru-he-huo-qu-qian-ru "mention")。&#x20;
+
+### 如何快速检索K个最近的嵌入向量？&#x20;
+
+为了快速搜索许多向量，我们建议使用矢量数据库。您可以在GitHub上的我们的Cookbook中找到有关与矢量数据库和OpenAI API一起工作的示例。 矢量数据库选项包括：
+
+* Pinecone，完全托管的矢量数据库&#x20;
+* Weaviate，开源矢量搜索引擎&#x20;
+* Faiss，Facebook提供的矢量搜索算法&#x20;
+* Redis作为一个向量数据库&#x20;
+* Qdrant，一个向量搜索引擎&#x20;
+* Typesense是一个开源搜索引擎，并带有向量搜索功能。
+
+#### &#x20;我应该使用哪种距离函数？
+
+我们推荐[余弦相似度](https://en.wikipedia.org/wiki/Cosine\_similarity)。距离函数的选择通常并不重要。 OpenAI嵌入被归一化为长度1，这意味着：&#x20;
+
+* 余弦相似性可以通过仅使用点积来稍微更快地计算出来&#x20;
+* 余弦相似性和欧几里得距离将产生相同的排名

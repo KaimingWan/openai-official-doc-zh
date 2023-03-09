@@ -359,7 +359,7 @@ button.onclick = function() {
 
 4. 增加文档
 
-![](<../.gitbook/assets/image (3) (1).png>)
+![](<../.gitbook/assets/image (3).png>)
 
 ### 最佳实践&#x20;
 

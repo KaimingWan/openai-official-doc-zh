@@ -86,11 +86,11 @@ I have an orange cat named Butterscotch.
 
 像“猫(cat)”这样的常见词是一个单一的词元，而不太常见的词通常被分解成多个词元。例如，“Butterscotch”翻译为四个词元：“But”，“ters”，“cot”和“ch”。许多词元以空格开头，例如“ hello”和“ bye”。给定一些文本，模型确定下一个最有可能出现的词元。例如，“Horses are my favorite”的文本最有可能跟随词元“ animal”。
 
-![](<../.gitbook/assets/image (5) (1) (1).png>)
+![](<../.gitbook/assets/image (5) (1).png>)
 
 这就是温度发挥作用的地方。如果您将此提示提交4次，并将温度设置为0，则模型始终会返回“动物(animal)”，因为它具有最高的概率。如果您增加温度，它将更冒险并考虑概率较低的词元。
 
-![](<../.gitbook/assets/image (4).png>)
+![](<../.gitbook/assets/image (4) (1).png>)
 
 通常情况下，对于需要定义明确输出的任务，最好设置较低的温度。如果需要多样性或创造力，则较高的温度可能会有用；或者如果您想为最终用户或人类专家生成几个变体以供选择，则也可以使用较高的温度。
 
